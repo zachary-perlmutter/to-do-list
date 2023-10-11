@@ -1,11 +1,9 @@
 // Define variables and get references to elements
-
 const taskInput = document.getElementById("taskInput");
 const addTaskButton = document.getElementById("addTaskButton");
 const taskList = document.getElementById("taskList");
 
 // Load tasks from local storage when the page loads
-
 window.addEventListener("load", () => {
   const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
   storedTasks.forEach((task) => {
@@ -14,7 +12,6 @@ window.addEventListener("load", () => {
 });
 
 // Implement adding tasks
-
 function addTask(taskText, isCompleted = false) {
   if (taskText !== "") {
     const taskItem = document.createElement("li");
@@ -43,29 +40,42 @@ addTaskButton.addEventListener("click", () => {
 });
 
 // Implement marking tasks as completed
-
 function toggleTaskCompletion(event) {
   const taskItem = event.target;
 
   if (taskItem.tagName === "LI") {
     taskItem.classList.toggle("completed");
+
+    // Update the completion status in local storage
+    const taskText = taskItem.textContent;
+    const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    const updatedTasks = storedTasks.map((task) => {
+      if (task.text === taskText) {
+        task.completed = !task.completed; // Toggle the completion status
+      }
+      return task;
+    });
+
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   }
 }
 
 // Implement deleting tasks
-
 function deleteTask(event) {
   const taskItem = event.target;
 
   if (taskItem.tagName === "LI") {
     taskItem.remove();
-  }
 
-  // Remove the task from local storage
-  const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  const taskText = taskItem.textContent;
-  const updatedTasks = storedTasks.filter((text) => text !== taskText);
-  localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    // Remove the task from local storage
+    const taskText = taskItem.textContent;
+    const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    const updatedTasks = storedTasks.filter((task) => task.text !== taskText);
+
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  }
 }
 
 taskList.addEventListener("click", toggleTaskCompletion);
